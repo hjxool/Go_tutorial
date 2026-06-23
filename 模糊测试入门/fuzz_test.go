@@ -16,7 +16,11 @@ func TestReverse(t *testing.T) {
 		{"!12345", "54321!"},
 	}
 	for _, v := range testcases {
-		rev := Reverse(v.in)
+		rev, revErr := Reverse(v.in)
+		if revErr != nil {
+			return
+		}
+
 		if rev != v.want {
 			// t.Errorf 会自动在输出末尾添加换行 所以不需要 \n
 			t.Errorf("转换值: %q, 期望: %q", rev, v.want)
@@ -36,8 +40,22 @@ func FuzzReverse(f *testing.F) {
 	// t *testing.T 后的参数必须与 f.Add 一一对应 如f.Add(10, "abc")则f.Fuzz(func(t *testing.T, n int, s string)
 	// 如果f.Add("abc") f.Add(123)添加不同类型的语料 则报错
 	f.Fuzz(func(t *testing.T, origin string) {
-		rev := Reverse(origin)
-		doubleRev := Reverse(rev)
+		rev, revErr := Reverse(origin)
+		if revErr != nil {
+			// 除了return 也可以调用 t.Skip() 来停止模糊输入的执行
+			return
+		}
+
+		doubleRev, doubleRevErr := Reverse(rev)
+		if doubleRevErr != nil {
+			return
+		}
+
+		// RuneCount 统计字符串中包含多少个 UTF‑8 编码的 rune（Unicode 码点）
+		t.Logf("origin=%d, rev=%d, doubleRev=%d",
+			utf8.RuneCountInString(origin),
+			utf8.RuneCountInString(rev),
+			utf8.RuneCountInString(doubleRev))
 
 		// 因为无法确认输入 因此不检查输出 而是检查结果是否符合某些特性 这是模糊测试的核心
 		if origin != doubleRev {
@@ -56,3 +74,4 @@ func FuzzReverse(f *testing.F) {
 // 如果只希望运行某个具体的测试 go test -run=FuzzReverse
 // 注意：go test 会执行所有目录下所有测试 但对于模糊测试只执行到添加语料库阶段 不会执行f.Fuzz 加-fuzz=Fuzz标志才真正执行模糊测试
 // 官方建议执行go test -fuzz=Fuzz前 先go test一下 以确认种子输入有没有问题
+// -fuzztime 标志可以限制测试时间 如-fuzztime 10s表示测试将在 10 秒后默认退出
