@@ -1,0 +1,6 @@
+// go work init 创建初始化文件
+// go work use -r . 将当前目录下所有具有 go.mod 的模块收集到 go.work 文件
+// 同工作区模块引用就不再需要下载 和replace相对路径会自动找寻工作区内模块
+go 1.25.5 // go使用的版本
+
+use ./hello // 工作区使用的模块
