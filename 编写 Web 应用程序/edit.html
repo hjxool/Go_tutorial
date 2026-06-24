@@ -1,0 +1,7 @@
+<!-- .Title 和 .Body 点标识符指的是 p.Title 和 p.Body 模板里的 . 就是传入的 p -->
+<h1>Editing {{.Title}}</h1>
+<!-- 提交后跳转 /save/ 路径的页面触发对应的处理方法-->
+<form action="/save/{{.Title}}" method="POST">
+  <div><textarea name="body" rows="20" cols="80">{{printf "%s" .Body}}</textarea></div>
+  <div><input type="submit" value="Save"></div>
+</form>

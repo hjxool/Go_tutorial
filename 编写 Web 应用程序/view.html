@@ -1,0 +1,5 @@
+<h1>{{.Title}}</h1>
+
+<p>[<a href="/edit/{{.Title}}">edit</a>]</p>
+<!-- printf "%s" .Body 指令是一个函数调用 将 .Body 输出为字符串而不是字节流，与调用 fmt.Printf 相同 -->
+<div>{{printf "%s" .Body}}</div>
